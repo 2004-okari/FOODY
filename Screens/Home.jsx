@@ -8,8 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchMeals } from '../redux/mealsSlice';
 import { FlatGrid } from 'react-native-super-grid';
 import { fetchByCategory } from '../redux/categorySlice';
+import { useNavigation } from '@react-navigation/native';
+import Details from './Details';
 
 const Home = () => {
+  const navigation = useNavigation()
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.meals.data.categories);
   const loading = useSelector((state) => state.meals.loading);
@@ -20,7 +23,7 @@ const Home = () => {
   const error2 = useSelector((state) => state.categories.error);
 
   const [selectedCategory, setSelectedCategory] = useState("Beef");
-
+  const [id, selectId] = useState('');
   
   useEffect(() => {
     dispatch(fetchMeals());
@@ -32,6 +35,11 @@ const Home = () => {
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+  };
+
+  const handleSelectedMeal = (id) => {
+    selectId(id);
+    navigation.navigate('Details');
   };
 
   if (error) {
@@ -99,7 +107,7 @@ const Home = () => {
           data={categories2}
           keyExtractor={(item) => item.idMeal}
           renderItem={({ item }) => (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSelectedMeal(item.idMeal)}>
               <View style={[tw`rounded-lg bg-blue-200`, styles.card]}>
                 <Image
                   source={{ uri: item.strMealThumb }}
